@@ -1,0 +1,146 @@
+drop database db_sistema_faculdade;
+
+create database db_sistema_faculdade;
+ 
+use db_sistema_faculdade;
+
+show databases;
+
+show tables;
+
+create table tbl_endereco (
+    id_endereco int primary key auto_increment,
+    rua varchar(100) not null,
+    numero int not null,
+    complemento varchar(50),
+    bairro varchar(50) not null,
+    cidade varchar(50) not null,
+    estado varchar(2) not null,
+    cep varchar(9) not null
+);
+
+create table tbl_alunos (
+    id_aluno int primary key auto_increment,
+    nome varchar(100) not null,
+    data_nascimento date not null,
+    cpf varchar(11) not null,
+    email varchar(100) not null,
+    telefone varchar(15) not null,
+    fk_endereco int not null,
+    foreign key (fk_endereco) references tbl_endereco(id_endereco)
+);
+
+create table tbl_curso (
+    id_curso int primary key auto_increment,
+    nome_curso varchar(100) not null,
+    carga_horaria int not null
+);
+
+create table tbl_materia (
+    id_materia int primary key auto_increment,
+    nome_materia varchar(100) not null,
+    fk_curso int not null,
+    foreign key (fk_curso) references tbl_curso(id_curso)
+);
+
+create table tbl_professor (
+    id_professor int primary key auto_increment,
+    nome varchar(100) not null,
+    especialidade varchar(100) not null,
+    email varchar(100) not null,
+    telefone varchar(15) not null
+);
+
+create table tbl_turma (
+    id_turma int primary key auto_increment,
+    ano_semestre varchar(10) not null,
+    fk_professor int not null,
+    fk_materia int not null,
+    foreign key (fk_professor) references tbl_professor(id_professor),
+    foreign key (fk_materia) references tbl_materia(id_materia)
+);
+
+create table tbl_notas (
+    id_nota int primary key auto_increment,
+    nota decimal(5,2) not null,
+    fk_aluno int not null,
+    fk_turma int not null,
+    foreign key (fk_aluno) references tbl_alunos(id_aluno),
+    foreign key (fk_turma) references tbl_turma(id_turma)
+);
+
+#inserts:
+
+insert into tbl_endereco (rua, numero, complemento, bairro, cidade, estado, cep)
+values
+('Rua das Flores', 123, 'Apto 202', 'Centro', 'São Paulo', 'SP', '01000-000'),
+('Avenida Paulista', 987, '', 'Bela Vista', 'São Paulo', 'SP', '01310-100'),
+('Rua Marechal', 45, 'Casa', 'Jardim América', 'Rio de Janeiro', 'RJ', '20040-020'),
+('Avenida Atlântica', 567, 'Cobertura', 'Copacabana', 'Rio de Janeiro', 'RJ', '22070-000');
+
+insert into tbl_alunos (nome, data_nascimento, cpf, email, telefone, fk_endereco)
+values
+('João Silva', '1995-05-10', '12345678901', 'joao.silva@email.com', '99999-9999', 1),
+('Maria Oliveira', '1998-11-22', '23456789012', 'maria.oliveira@email.com', '88888-8888', 2),
+('Carlos Pereira', '1997-03-30', '34567890123', 'carlos.pereira@email.com', '77777-7777', 3),
+('Ana Souza', '1999-07-15', '45678901234', 'ana.souza@email.com', '66666-6666', 4);
+
+insert into tbl_curso (nome_curso, carga_horaria)
+values
+('Engenharia de Software', 4000),
+('Administração', 3600),
+('Ciência da Computação', 3800),
+('Direito', 4200);
+
+insert into tbl_materia (nome_materia, fk_curso)
+values
+('Algoritmos e Estruturas de Dados', 1),
+('Gestão de Projetos', 2),
+('Inteligência Artificial', 3),
+('Direito Constitucional', 4);
+
+insert into tbl_professor (nome, especialidade, email, telefone)
+values
+('Professor Lucas Mendes', 'Desenvolvimento de Software', 'lucas.mendes@faculdade.com', '55555-5555'),
+('Professora Paula Santos', 'Gestão Empresarial', 'paula.santos@faculdade.com', '44444-4444'),
+('Professor Ricardo Lima', 'Inteligência Artificial', 'ricardo.lima@faculdade.com', '33333-3333'),
+('Professora Júlia Costa', 'Direito Civil', 'julia.costa@faculdade.com', '22222-2222');
+
+insert into tbl_turma (ano_semestre, fk_professor, fk_materia)
+values
+('2024/1', 1, 1),
+('2024/2', 2, 2),
+('2024/1', 3, 3),
+('2024/2', 4, 4);
+
+insert into tbl_notas (nota, fk_aluno, fk_turma)
+values
+(8.5, 1, 1),
+(9.0, 2, 2),
+(7.8, 3, 3),
+(6.2, 4, 4);
+
+
+#selects:
+
+select * from tbl_alunos;
+
+select * from tbl_endereco;
+
+select * from tbl_curso;
+
+select * from tbl_materia;
+
+select * from tbl_professor;
+
+select * from tbl_turma;
+
+select * from tbl_notas;
+
+select 
+    a.nome as nome_aluno,
+    n.nota as nota
+from 
+    tbl_notas n
+inner join 
+    tbl_alunos a on n.fk_aluno = a.id_aluno;
